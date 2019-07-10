@@ -23,6 +23,7 @@ public class Program {
 		
 		//solucao muito ruim pois insere as verificacoes dentro do programa principal sem tratas excecoes
 		
+		// validaçao na hora de criar o objeto continua no programa principal pois nao temos como fazer isso com o contrutor da classe
 		if(!saida.after(chegada)) { // verifica se saida é depois da chegada
 			System.out.println("Erro na reserva : Data da saida antes da data de chegada ");
 		}else {
@@ -38,17 +39,13 @@ public class Program {
 			System.out.print("nova Data de Saida: ");
 			saida = sdf.parse(scan.next());
 			
-			// verificar os casos que nao podemos atualizar fazendo isso direto no programa principal o que é solucao muito ruim
-			Date agora = new Date(); //criamos uma data nova que recebe a data Atual.
-			
-			if(chegada.before(agora) || saida.before(agora)) { //se as datas de chegada ou de saida forem anteriores a data atual nao alteramos a data e imprime o erro
-			System.out.println("Erro na reserva: Data inferiores a data atual");	
-			}else if(!saida.after(chegada)) {
-				System.out.println("Erro na reserva : Data da saida antes da data de chegada ");			
-			}else
-				reserva1.atualizaDatas(chegada, saida); // chama o metodo que atualiza datas
-				
-				System.out.println("Reserva: " +reserva1);
+			//mudanca aqui ao chamar o metodo atualizaDatas que agora retorna String armazenamos a string em uma String erro criada aqui
+			String erro = reserva1.atualizaDatas(chegada, saida); // chama o metodo que atualiza datas
+			if (erro != null){	 //caso erro seja diferente de vazio isso quer dizer que recebeu uma mensagem de erro na validacao
+				System.out.println("Erro na atualização de reservas: " + erro);
+			}else {	// caso nao tenha erro mostramos a reserva atualizada
+			System.out.println("Reserva: " +reserva1);
+			}
 				
 			}
 			
