@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import model.exceptions.DomainException;
+
 public class Reserva {
 	private Integer numeroQuarto;
 	private Date chegada;
@@ -15,8 +17,12 @@ public class Reserva {
 	public Reserva() {
 
 	}
-
-	public Reserva(Integer numeroQuarto, Date chegada, Date saida) {
+	// aqui no contrutor tambem teremos uma excecao possivel
+	public Reserva(Integer numeroQuarto, Date chegada, Date saida) throws DomainException {
+		if (!saida.after(chegada)) {
+			throw new DomainException("Erro na reserva : Data da saida antes da data de chegada ");
+		}
+		
 		this.numeroQuarto = numeroQuarto;
 		this.chegada = chegada;
 		this.saida = saida;
@@ -49,27 +55,18 @@ public class Reserva {
 
 	}
 
-	public String atualizaDatas(Date chegada, Date saida) { // metodo agora retorna uma string
-
-		// **** alteração 1 solucao ruim ainda mas passando a validacao para dentro do
-		// metodo de atualizacao de datas tirando do programa principal
-
+	public void atualizaDatas(Date chegada, Date saida) throws DomainException { // propagando a excecao
 		Date agora = new Date(); // criamos uma data nova que recebe a data Atual.
 
 		if (chegada.before(agora) || saida.before(agora)) { // se as datas de chegada ou de saida forem anteriores a
-															// data atual nao alteramos a data e imprime o erro
-			return "Erro na reserva: Data inferiores a data atual"; // ***return corta o metodo caso passe por aqui
+															// data atual nao alteramos a data  e lancamos uma excecao
+			throw new DomainException("Erro na reserva: Data inferiores a data atual");   // instancia uma excecao
 		}
 		if (!saida.after(chegada)) {
-			return "Erro na reserva : Data da saida antes da data de chegada ";
+			throw new DomainException("Erro na reserva : Data da saida antes da data de chegada ");
 		}
-		// caso nao tiver nenhum erro o metodo atualiza os dados de chegada e saida e
-		// retorna null para String indicando que não ocorreu erros.
-
 		this.chegada = chegada;
-		this.saida = saida;
-
-		return null;
+		this.saida = saida;		
 	}
 
 	@Override

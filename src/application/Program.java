@@ -6,52 +6,60 @@ import java.util.Date;
 import java.util.Scanner;
 
 import model.entities.Reserva;
+import model.exceptions.DomainException;
 
 public class Program {
 
-	public static void main(String[] args) throws ParseException { //propaga a exececao para o programa 
+	public static void main(String[] args) { 
 		Scanner scan = new Scanner(System.in);
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); // formatacao de datas
+
 		
+		//Programa com excecoes tratadas
+		try {	
 		System.out.print("Numero do Quarto: ");
 		int numeroQuarto = scan.nextInt();
-		
+
 		System.out.print("Data de chegada: ");
-		Date chegada = sdf.parse(scan.next());  //tratar a exececao ou propagar a excecao utilizando a clausula throws
+		Date chegada = sdf.parse(scan.next()); // tratar a exececao 
 		System.out.print("Data Saida: ");
 		Date saida = sdf.parse(scan.next());
+
+		Reserva reserva1 = new Reserva(numeroQuarto, chegada, saida); // instancia a reserga
+		System.out.println("Reserva " + reserva1);
+
+		System.out.println();
+		// ATUALIZACAO DA RESERVA
+
+		System.out.println("Entre com a data pra atualizar a reserva ");
+		System.out.print("nova Data de chegada : ");
+		chegada = sdf.parse(scan.next());
+		System.out.print("nova Data de Saida: ");
+		saida = sdf.parse(scan.next());
+
+		reserva1.atualizaDatas(chegada, saida);
+		System.out.println("Reserva: " + reserva1);
+		}
+		// primeira excecao ParseException 
+		catch(ParseException e){
+			System.out.println("Formato de data invalido"); // caso digitem uma data que nao se enquadre no formato criado na linha 14
+		}
+		//catch(IllegalArgumentException e) { // captura a excecao criada para metodo atualiza datas
+		//	System.out.println("Erro na reserva: "+ e.getMessage());  illegal Argument Excepetion é do proprio Java 
+		//}
 		
-		//solucao muito ruim pois insere as verificacoes dentro do programa principal sem tratas excecoes
+		//criando uma excecao personalizada
+		catch(DomainException e) {
+			System.out.println(e.getMessage());
+			
+		}
+		//capturar erros de outras excecoes quaisquer
+		catch(RuntimeException e) {
+			System.out.println("Erro inesperado exceção generica RuntimeExcepetion");
+		}
 		
-		// validaçao na hora de criar o objeto continua no programa principal pois nao temos como fazer isso com o contrutor da classe
-		if(!saida.after(chegada)) { // verifica se saida é depois da chegada
-			System.out.println("Erro na reserva : Data da saida antes da data de chegada ");
-		}else {
-			Reserva reserva1 = new Reserva(numeroQuarto, chegada, saida); // instancia a reserga
-			System.out.println("Reserva "+ reserva1);
-			
-			System.out.println();
-			// ATUALIZACAO DA RESERVA
 		
-			System.out.println("Entre com a data pra atualizar a reserva ");
-			System.out.print("nova Data de chegada : ");
-			chegada = sdf.parse(scan.next());  
-			System.out.print("nova Data de Saida: ");
-			saida = sdf.parse(scan.next());
-			
-			//mudanca aqui ao chamar o metodo atualizaDatas que agora retorna String armazenamos a string em uma String erro criada aqui
-			String erro = reserva1.atualizaDatas(chegada, saida); // chama o metodo que atualiza datas
-			if (erro != null){	 //caso erro seja diferente de vazio isso quer dizer que recebeu uma mensagem de erro na validacao
-				System.out.println("Erro na atualização de reservas: " + erro);
-			}else {	// caso nao tenha erro mostramos a reserva atualizada
-			System.out.println("Reserva: " +reserva1);
-			}
-				
-			}
-			
-			
 		scan.close();
-		}	
-		
 	}
 
+}
